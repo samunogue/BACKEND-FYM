@@ -8,6 +8,7 @@ const MusicoSchema = new mongoose.Schema(
         email:{type: String, required:true},
         senha:{type:String, required:true},
         descricao:{type: String, required:true},
+        nota: {type:String},
         endereco:{
                 cep:{type:String, required:true},
                 logradouro:{type:String, required:true},
@@ -17,6 +18,7 @@ const MusicoSchema = new mongoose.Schema(
                 numero:{type:String, required:true},
         },
         generos:[],
+        favoritos:[],
         conversas:[
                 {
                         pessoas:[],

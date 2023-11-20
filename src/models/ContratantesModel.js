@@ -15,6 +15,7 @@ const ContratanteSchema = new mongoose.Schema(
                 cidade:{type:String, required:true},
                 numero:{type:String, required:true},
         },
+        favoritos:[],
         generos:[],
         conversas:[
                 {

@@ -1,6 +1,7 @@
 import express from "express";
 import contratantes_route from './ContratantesRoutes.js'
 import musicos_route from './MusicosRoute.js'
+import conta_route from './ContaRoute.js'
 
 const routes = (app) =>{
         app.get('/',(req,res)=>{
@@ -9,7 +10,8 @@ const routes = (app) =>{
         app.use(
                 express.json(),
                 contratantes_route,
-                musicos_route
+                musicos_route,
+                conta_route
                 
         )
 }

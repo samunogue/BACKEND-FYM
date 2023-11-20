@@ -1,6 +1,6 @@
 import musicos_bd from "../models/MusicoModel.js";
 
-class MusicoController {
+export class MusicoController {
   static buscarMusico = async (req, res) => {
     const id = req.query.id;
     const nome = req.query.nome
@@ -18,18 +18,19 @@ class MusicoController {
       }
     }else if(nome != undefined){
       try {
-        const musico = await musicos_bd.find({nomeCompleto: nome})
-        if (!musico) {
+        const musico = await musicos_bd.find({ nomeCompleto: { $regex: new RegExp(nome, 'i') } });
+      
+        if (musico.length === 0) {
           res.status(404).send({ error: true, mensagem: "Músico não encontrado" });
         } else {
           res.status(200).send(musico);
         }
-      } catch {
-        res.status(404).send({ error: true, mensagem: "Músico não encontrado" });
+      } catch (error) {
+        res.status(500).send({ error: true, mensagem: "Erro na busca do músico" });
       }
     }else if(genero != undefined){
         try {
-            const musicos = await Musico.find({ generos: { $in: [genero] } });
+            const musicos = await musicos_bd.find({ generos: { $in: [genero] } });
         
             if (musicos.length === 0) {
               return res.status(404).json({ message: 'Nenhum músico encontrado com esse gênero.' });
@@ -45,7 +46,7 @@ class MusicoController {
         if (!musicos) {
           res.status(404).send({ error: true, mensagem: "Musicos não encontrado" });
         } else {
-          res.status(200).send(contratantes);
+          res.status(200).send(musicos);
         }
       } catch {
         res.status(404).send({ error: true, mensagem: "Musicos não encontrado" });
@@ -101,5 +102,37 @@ class MusicoController {
       res.status(400).send({ error: true, message: "Erro ao excluir usuário" });
     }
   }
+  static favoritarMusico = async (req, res) => {
+    const idMusico = req.body.idMusico;
+    const idMusicoFavoritado = req.body.idMusicoFavoritado
+    
+    try {
+      const musico = await musicos_bd.findOne({_id: idMusico})
+      const musicoFavoritado = await musicos_bd.findOne({ _id: idMusicoFavoritado });
+      if (musico && musicoFavoritado) {
+        var verificacao = false
+        musico.favoritos.forEach(item =>{
+          if(item.id == musicoFavoritado.id){
+            res.status(200).send({ error: true, message: "Músico ja adicionado" })
+            verificacao = true
+          }
+        })
+        if(verificacao == false){
+          musico.favoritos.push({
+            id:musicoFavoritado.id,
+            nomeCompleto:musicoFavoritado.nomeCompleto,
+            descricao:musicoFavoritado.descricao,
+            generos: musicoFavoritado.generos,
+            nota:musicoFavoritado.nota
+          })
+          musico.save()
+          res.status(200).send({ error: false, user: musico });
+        }
+      } else {
+        res.status(200).send({ error: true, message: "Usuário não encontrado" });
+      }
+    } catch (error) {
+      res.status(400).send({ error: true, message: "Erro ao favoritar músico" });
+    }
+  }
 }
-export default MusicoController

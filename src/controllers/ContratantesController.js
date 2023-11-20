@@ -1,4 +1,5 @@
 import contratantes_bd from "../models/ContratantesModel.js"
+import musicos_bd from "../models/MusicoModel.js";
 
 class ContratantesController {
   static buscarContratante = async (req, res) => {
@@ -27,6 +28,7 @@ class ContratantesController {
       }
     }
   }
+  
   static cadastrarContratante = async (req, res) => {
     const user = new contratantes_bd(req.body)
     try {
@@ -74,6 +76,38 @@ class ContratantesController {
       }
     } catch (error) {
       res.status(400).send({ error: true, message: "Erro ao excluir usuário" });
+    }
+  }
+  static favoritarMusico = async (req, res) => {
+    const idMusico = req.body.idMusico;
+    const idContratante = req.body.idContratante
+    try {
+      const musico = await musicos_bd.findOne({_id: idMusico})
+      const contratante = await contratantes_bd.findOne({ _id: idContratante });
+      if (contratante && musico) {
+        var verificacao = false
+        contratante.favoritos.forEach(item =>{
+          if(item.id == musico.id){
+            res.status(200).send({ error: true, message: "Músico ja adicionado" })
+            verificacao = true
+          }
+        })
+        if(verificacao == false){
+          contratante.favoritos.push({
+            id:musico.id,
+            nomeCompleto:musico.nomeCompleto,
+            descricao:musico.descricao,
+            generos: musico.generos,
+            nota:musico.nota
+          })
+          contratante.save()
+          res.status(200).send({ error: false, user: contratante });
+        }
+      } else {
+        res.status(200).send({ error: true, message: "Usuário não encontrado" });
+      }
+    } catch (error) {
+      res.status(400).send({ error: true, message: "Erro ao favoritar músico" });
     }
   }
 }
