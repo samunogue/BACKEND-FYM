@@ -19,29 +19,8 @@ const MusicoSchema = new mongoose.Schema(
         },
         generos:[],
         favoritos:[],
-        conversas:[
-                {
-                        pessoas:[],
-                        mensagens:[
-                                {
-                                        autor:{type:String},
-                                        texto:{type:String},
-                                        data:{type:String}
-                                }
-                        ]
-
-                }
-        ],
-        contratos:[
-                {
-                        pessoas:[
-                                {
-                                        idUser:{type:String}
-                                }
-                        ],
-                        termo:{type:String},
-                }
-        ],
+        conversas:[],
+        contratos:[],
         midia:[]
         }
 )

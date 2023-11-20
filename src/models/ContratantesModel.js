@@ -17,29 +17,8 @@ const ContratanteSchema = new mongoose.Schema(
         },
         favoritos:[],
         generos:[],
-        conversas:[
-                {
-                        pessoas:[],
-                        mensagens:[
-                                {
-                                        autor:{type:String},
-                                        texto:{type:String},
-                                        data:{type:String}
-                                }
-                        ]
-
-                }
-        ],
-        contratos:[
-                {
-                        pessoas:[
-                                {
-                                        idUser:{type:String}
-                                }
-                        ],
-                        termo:{type:String},
-                }
-        ]
+        conversas:[],
+        contratos:[]
         }
 )
 const contratantes_bd = mongoose.model('contratantes', ContratanteSchema)
