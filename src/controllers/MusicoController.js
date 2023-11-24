@@ -135,4 +135,5 @@ export class MusicoController {
       res.status(400).send({ error: true, message: "Erro ao favoritar músico" });
     }
   }
+  
 }

@@ -110,5 +110,45 @@ class ContratantesController {
       res.status(400).send({ error: true, message: "Erro ao favoritar músico" });
     }
   }
+  static cadastrarContrato = async (req, res) => {
+    const cpfContratante = req.body.cpfContratante
+    const cpfMusico = req.body.cpfMusico
+    const dataEvento = req.body.dataEvento
+    const termo = req.body.termo
+    const valor = req.body.valor 
+
+    try {
+        const contratante = await contratantes_bd.findOne({CPF:cpfContratante})
+        const musico = await musicos_bd.findOne({CPF:cpfMusico})
+        if (contratante && musico) {
+            var contrato = {
+              contratante:{
+                id:contratante.id,
+                nome:contratante.nomeCompleto,
+                cpf:contratante.CPF
+              },
+              musico:{
+                id:musico.id,
+                nome:musico.nomeCompleto,
+                cpf:musico.CPF
+              },
+              termo:termo,
+              dataEvento:dataEvento,
+              valor:valor,
+              status:"pendente",
+              codigo: `${Date.now()}${contratante.CPF.slice(0,4)}${musico.CPF.slice(0,4)}`
+            }
+            contratante.contratos.push(contrato)
+            musico.contratos.push(contrato)
+            contratante.save()
+            musico.save()
+            res.status(200).send({ error: false, contrato: contrato })
+        } else {
+            res.status(404).send({ error: true, message: "Não foi possível gerar o contrato" });
+        }
+    } catch (error) {
+        res.status(400).send({ error: true, message: "Erro ao editar usuário" });
+    }
+}
 }
 export default ContratantesController
