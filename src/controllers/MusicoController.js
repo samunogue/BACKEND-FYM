@@ -1,3 +1,4 @@
+import contratantes_bd from "../models/ContratantesModel.js";
 import musicos_bd from "../models/MusicoModel.js";
 
 export class MusicoController {
@@ -135,5 +136,74 @@ export class MusicoController {
       res.status(400).send({ error: true, message: "Erro ao favoritar músico" });
     }
   }
+
+  static responderContrato = async (req, res) => {
+    const cpfMusico = req.body.cpfMusico;
+    const cpfContratante = req.body.cpfContratante
+    const idContrato = req.body.idContrato;
+    const resposta = req.body.resposta;
+  
+    try {
+      const musico = await musicos_bd.findOneAndUpdate(
+        { CPF: cpfMusico, 'contratos.codigo': idContrato },
+        { $set: { 'contratos.$.status': resposta == 'true' ? 'ACEITO' : 'RECUSADO' } },
+        { new: true }
+      )
+      const contratante = await contratantes_bd.findOneAndUpdate(
+        { CPF: cpfContratante, 'contratos.codigo': idContrato },
+        { $set: { 'contratos.$.status': resposta == 'true' ? 'ACEITO' : 'RECUSADO' } },
+        { new: true }
+      )
+  
+      if (musico && contratante) {
+        res.status(200).send({ error: false, user: musico });
+      } else {
+        res.status(200).send({ error: true, message: 'Não foi possível localizar o contrato ou usuário' });
+      }
+    } catch (error) {
+      console.error('Erro ao responder contrato:', error);
+      res.status(500).send({ error: true, message: 'Erro ao responder contrato' });
+    }
+  }
+  static adicionarGenero = async (req, res) => {
+    const CPF = req.body.cpf;
+    const genero = req.body.genero 
+    const query = { CPF: CPF }
+
+    try {
+        const musico = await musicos_bd.findOne(query)
+        if (musico) {
+            if(musico.generos.includes(genero)){
+              res.status(200).send({ error: true, message: "Gênero ja adicionado"})
+              return
+            }
+            musico.generos.push(genero)
+            musico.save()
+            res.status(200).send({ error: false, user: musico })
+        } else {
+            res.status(404).send({ error: true, message: "Usuário não encontrado" });
+        }
+    } catch (error) {
+        res.status(400).send({ error: true, message: "Erro ao editar usuário" });
+  }
+} 
+  static removerGenero = async (req, res) => {
+    const CPF = req.body.cpf;
+    const genero = req.body.genero 
+    const query = { CPF: CPF }
+
+    try {
+        const musico = await musicos_bd.findOne(query);
+        if (musico) {
+            musico.generos = musico.generos.filter(item => item != genero)
+            musico.save()
+            res.status(200).send({ error: false, user: musico })
+        } else {
+            res.status(404).send({ error: true, message: "Usuário não encontrado" });
+        }
+    } catch (error) {
+        res.status(400).send({ error: true, message: "Erro ao editar usuário" });
+  }
+  } 
   
 }

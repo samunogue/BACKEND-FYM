@@ -8,6 +8,5 @@ router
         .post('/v1/conta/loginMusico', ContaController.loginMusico)
         .post('/v1/conta/redefinirSenhaContratante', ContaController.redefinirSenhaContratante)
         .post('/v1/conta/redefinirSenhaMusico', ContaController.redefinirSenhaMusico)
-        .post('/v1/conta/enviarMensagem', ContaController.enviarMensagem)
 
 export default router

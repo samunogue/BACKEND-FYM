@@ -149,6 +149,46 @@ class ContratantesController {
     } catch (error) {
         res.status(400).send({ error: true, message: "Erro ao editar usuário" });
     }
-}
+  }
+  static adicionarGenero = async (req, res) => {
+    const CPF = req.body.cpf;
+    const genero = req.body.genero 
+    const query = { CPF: CPF }
+
+    try {
+        const contratante = await contratantes_bd.findOne(query);
+        if (contratante) {
+            if(contratante.generos.includes(genero)){
+              res.status(200).send({ error: true, message: "Gênero ja adicionado"})
+              return
+            }
+            contratante.generos.push(genero)
+            contratante.save()
+            res.status(200).send({ error: false, user: contratante })
+        } else {
+            res.status(404).send({ error: true, message: "Usuário não encontrado" });
+        }
+    } catch (error) {
+        res.status(400).send({ error: true, message: "Erro ao editar usuário" });
+  }
+} 
+  static removerGenero = async (req, res) => {
+    const CPF = req.body.cpf;
+    const genero = req.body.genero 
+    const query = { CPF: CPF }
+
+    try {
+        const contratante = await contratantes_bd.findOne(query);
+        if (contratante) {
+            contratante.generos = contratante.generos.filter(item => item != genero)
+            contratante.save()
+            res.status(200).send({ error: false, user: contratante })
+        } else {
+            res.status(404).send({ error: true, message: "Usuário não encontrado" });
+        }
+    } catch (error) {
+        res.status(400).send({ error: true, message: "Erro ao editar usuário" });
+  }
+  } 
 }
 export default ContratantesController

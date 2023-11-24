@@ -74,47 +74,4 @@ export class ContaController {
             res.status(500).send({ error: true, message: "Erro no servidor" });
         }
     }
-    static enviarMensagem = async (req, res) =>{
-        const idRemetente = req.body.idRemetente
-        const tipoRemetente = req.body.tipoRemetente
-        const idDestinatario = req.body.idDestinatario
-        const tipoDestinatario = req.body.tipoDestinatario
-        const mensagem = req.body.mensagem
-
-        var remetente = null
-        if(tipoRemetente == 'contratante') remetente = await contratantes_bd.findById(idRemetente)
-        if(tipoRemetente == 'musico') remetente = await musicos_bd.findById(idRemetente)
-        var destinatario = null
-        if(tipoDestinatario == 'contratante') destinatario = await contratantes_bd.findById(idDestinatario)
-        if(tipoDestinatario == 'musico') destinatario = await musicos_bd.findById(idDestinatario)
-
-        console.log(remetente)
-        console.log(destinatario)
-        try {
-        if (remetente && destinatario) {
-            remetente.conversas.push(
-                {
-                    remetente:idRemetente,
-                    mensagem:mensagem,
-                    data:  new Date()
-                }
-            )
-            remetente.save()
-            destinatario.conversas.push(
-                {   
-                    remetente:idRemetente,
-                    mensagem:mensagem,
-                    data:  new Date()
-                }
-            )
-            destinatario.save()
-            res.status(200).send({ error: false, message: "Mensagem Adicionada" });
-            
-        } else {
-            res.status(200).send({ error: true, message: "Usuários não encontrado" });
-        }
-        } catch (error) {
-            res.status(500).send({ error: true, message: "Erro no servidor" });
-        }
-    }
 }
