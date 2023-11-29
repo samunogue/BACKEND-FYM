@@ -21,7 +21,8 @@ const MusicoSchema = new mongoose.Schema(
         favoritos:[],
         conversas:[],
         contratos:[],
-        midia:[]
+        midia:[],
+        avaliacoes:[]
         }
 )
 const musicos_bd = mongoose.model('musicos', MusicoSchema)

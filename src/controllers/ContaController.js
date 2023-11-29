@@ -1,4 +1,5 @@
 import contratantes_bd from "../models/ContratantesModel.js";
+import conversas_bd from "../models/ConversasModel.js";
 import musicos_bd from "../models/MusicoModel.js";
 
 export class ContaController {
@@ -69,6 +70,22 @@ export class ContaController {
             res.status(200).send({ error: false, user: musico });
         } else {
             res.status(200).send({ error: true, message: "Credenciais Inválidas" });
+        }
+        } catch (error) {
+            res.status(500).send({ error: true, message: "Erro no servidor" });
+        }
+    }
+    static avaliarMusico = async (req, res) =>{
+        const idMusico = req.body.idMusico
+        const avaliacao = req.body.avaliacao
+        try {
+        const musico = await musicos_bd.findById(idMusico)
+        if (musico) {
+            musico.avaliacoes.push(avaliacao)
+            musico.save()
+            res.status(200).send({ error: false, avaliacao: avaliacao });
+        } else {
+            res.status(200).send({ error: true, message: "Músico não encontrado" });
         }
         } catch (error) {
             res.status(500).send({ error: true, message: "Erro no servidor" });
