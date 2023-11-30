@@ -10,6 +10,7 @@ router
         .post('/v1/conta/redefinirSenhaContratante', ContaController.redefinirSenhaContratante)
         .post('/v1/conta/redefinirSenhaMusico', ContaController.redefinirSenhaMusico)
         .post('/v1/conta/avaliarMusico', ContaController.avaliarMusico)
+        .post('/v1/conta/criarConversa', ContaController.criarConversa)
         .post('/v1/conta/enviarMensagem', ContaController.enviarMensagem)
 
 export default router

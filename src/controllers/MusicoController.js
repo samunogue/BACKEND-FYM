@@ -10,7 +10,7 @@ export class MusicoController {
       try {
         const user = await musicos_bd.findById(id).exec()
         if (user == null) {
-          res.status(404).send({ error: true, mensagem: "Músico não encontrado" });
+          res.status(200).send({ error: true, mensagem: "Músico não encontrado" });
         } else {
           res.status(200).send(user);
         }
@@ -22,7 +22,7 @@ export class MusicoController {
         const musico = await musicos_bd.find({ nomeCompleto: { $regex: new RegExp(nome, 'i') } });
       
         if (musico.length === 0) {
-          res.status(404).send({ error: true, mensagem: "Músico não encontrado" });
+          res.status(200).send({ error: true, mensagem: "Músico não encontrado" });
         } else {
           res.status(200).send(musico);
         }
@@ -45,7 +45,7 @@ export class MusicoController {
       try {
         const musicos = await musicos_bd.find();
         if (!musicos) {
-          res.status(404).send({ error: true, mensagem: "Musicos não encontrado" });
+          res.status(200).send({ error: true, mensagem: "Musicos não encontrado" });
         } else {
           res.status(200).send(musicos);
         }
@@ -130,6 +130,24 @@ export class MusicoController {
           res.status(200).send({ error: false, user: musico });
         }
       } else {
+        res.status(200).send({ error: true, message: "Usuário não encontrado" });
+      }
+    } catch (error) {
+      res.status(400).send({ error: true, message: "Erro ao favoritar músico" });
+    }
+  }
+  static desfavoritarMusico = async (req, res) => {
+    const idMusico = req.body.idMusico;
+    const idMusicoFavoritado = req.body.idMusicoFavoritado
+    try {
+      const musico = await musicos_bd.findOne({_id: idMusico})
+      const musicoFavoritado = await musicos_bd.findOne({ _id: idMusicoFavoritado });
+      if (musicoFavoritado && musico) {
+          var novosFavoritos = musico.favoritos.filter(item => item.id != musicoFavoritado._id)
+          musico.favoritos = novosFavoritos
+          musico.save()
+          res.status(200).send({ error: false, user: musico });
+      }else {
         res.status(200).send({ error: true, message: "Usuário não encontrado" });
       }
     } catch (error) {

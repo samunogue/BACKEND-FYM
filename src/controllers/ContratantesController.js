@@ -8,7 +8,7 @@ class ContratantesController {
       try {
         const user = await contratantes_bd.findById(id).exec()
         if (user == null) {
-          res.status(404).send({ error: true, mensagem: "Contratante não encontrado" });
+          res.status(200).send({ error: true, mensagem: "Contratante não encontrado" });
         } else {
           res.status(200).send(user);
         }
@@ -19,7 +19,7 @@ class ContratantesController {
       try {
         const contratantes = await contratantes_bd.find();
         if (!contratantes) {
-          res.status(404).send({ error: true, mensagem: "Contratante não encontrado" });
+          res.status(200).send({ error: true, mensagem: "Contratante não encontrado" });
         } else {
           res.status(200).send(contratantes);
         }
@@ -104,6 +104,24 @@ class ContratantesController {
           res.status(200).send({ error: false, user: contratante });
         }
       } else {
+        res.status(200).send({ error: true, message: "Usuário não encontrado" });
+      }
+    } catch (error) {
+      res.status(400).send({ error: true, message: "Erro ao favoritar músico" });
+    }
+  }
+  static desfavoritarMusico = async (req, res) => {
+    const idMusico = req.body.idMusico;
+    const idContratante = req.body.idContratante
+    try {
+      const musico = await musicos_bd.findOne({_id: idMusico})
+      const contratante = await contratantes_bd.findOne({ _id: idContratante });
+      if (contratante && musico) {
+          var novosFavoritos = contratante.favoritos.filter(item => item.id != musico._id)
+          contratante.favoritos = novosFavoritos
+          contratante.save()
+          res.status(200).send({ error: false, user: contratante });
+      }else {
         res.status(200).send({ error: true, message: "Usuário não encontrado" });
       }
     } catch (error) {

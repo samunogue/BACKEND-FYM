@@ -106,7 +106,46 @@ export class ContaController {
             res.status(404).send({ error: true, mensagem: "Conversa não encontrado" });
           }
     }
+    static criarConversa = async (req, res) =>{
+        const idUserRemetente = req.body.idUserRemetente
+        const tipoRemetente = req.body.tipoRemetente
+        const idUserDestinatario = req.body.idUserDestinatario
+        const tipoDestinatario = req.body.tipoDestinatario
 
+        try{
+            var remetente = ""
+            if(tipoRemetente == 'musico')  remetente = await musicos_bd.findById(idUserRemetente)
+            if(tipoRemetente == 'contratante')  remetente = await contratantes_bd.findById(idUserRemetente)
+            var destinatario = ""
+            if(tipoDestinatario == 'musico') destinatario = await musicos_bd.findById(idUserDestinatario)
+            if(tipoDestinatario == 'contratante')  destinatario = await contratantes_bd.findById(idUserDestinatario)
+
+            if(remetente && destinatario){
+                var conversas = await conversas_bd.find()
+                var conversaExiste = false
+                conversas.forEach(element => {
+                    var conversa = element
+                    if(conversa.usuarios.includes(remetente.id) == true && conversa.usuarios.includes(destinatario.id) == true ){
+                        conversaExiste = true
+                        res.status(200).send({ error: true, message:"Conversa ja existe" })
+                    }
+                })
+                if(conversaExiste == false){
+                    var conversa = {
+                        usuarios:[remetente.id,destinatario.id],
+                        mensagens:[]                    
+                    }
+                    const novaConversa = new conversas_bd(conversa)
+                    novaConversa.save()
+                    res.status(200).send({ error: false, conversa: novaConversa })
+                    return
+                }
+            }
+        }catch{
+            res.status(500).send({ error: true, message: "Erro no servidor" });
+        }
+
+    }
     static enviarMensagem = async (req, res) =>{
         const idUserRemetente = req.body.idUserRemetente
         const tipoRemetente = req.body.tipoRemetente
