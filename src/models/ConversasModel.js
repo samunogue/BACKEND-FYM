@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 
 const ConversaSchema = new mongoose.Schema(
         {
-        mensagens:[],
+        usuarios:[],
+        mensagens:[]
         }
 )
 const conversas_bd = mongoose.model('chat', ConversaSchema)

@@ -91,4 +91,82 @@ export class ContaController {
             res.status(500).send({ error: true, message: "Erro no servidor" });
         }
     }
+    static buscarConversas = async (req,res) =>{
+        try {
+            const idUser = req.query.id
+            const conversas = await conversas_bd.find({
+                usuarios: idUser
+              });
+            if (conversas.length == 0) {
+              res.status(200).send({ error: true, mensagem: "Conversa não encontrado" });
+            } else {
+              res.status(200).send(conversas);
+            }
+          } catch {
+            res.status(404).send({ error: true, mensagem: "Conversa não encontrado" });
+          }
+    }
+
+    static enviarMensagem = async (req, res) =>{
+        const idUserRemetente = req.body.idUserRemetente
+        const tipoRemetente = req.body.tipoRemetente
+        const idUserDestinatario = req.body.idUserDestinatario
+        const tipoDestinatario = req.body.tipoDestinatario
+        const mensagem = req.body.mensagem
+        try {
+        var remetente = ""
+        if(tipoRemetente == 'musico')  remetente = await musicos_bd.findById(idUserRemetente)
+        if(tipoRemetente == 'contratante')  remetente = await contratantes_bd.findById(idUserRemetente)
+        var destinatario = ""
+        if(tipoDestinatario == 'musico') destinatario = await musicos_bd.findById(idUserDestinatario)
+        if(tipoDestinatario == 'contratante')  destinatario = await contratantes_bd.findById(idUserDestinatario)
+
+        if (remetente && destinatario) {
+            var conversas = await conversas_bd.find()
+            if(conversas == null){
+                var conversa = {
+                    usuarios:[remetente.id,destinatario.id],
+                    mensagens:[{
+                        user:remetente.id,
+                        texto:mensagem
+                    }]                    
+                }
+                const novaConversa = new conversas_bd(conversa)
+                novaConversa.save()
+                res.status(200).send({ error: false, conversa: novaConversa })
+                return
+            }
+            var conversaExiste = false
+            conversas.forEach(element => {
+                var conversa = element
+                if(conversa.usuarios.includes(remetente.id) == true && conversa.usuarios.includes(destinatario.id) == true ){
+                    conversaExiste = true
+                    conversa.mensagens.push({
+                        user:remetente.id,
+                        texto:mensagem
+                    })
+                    conversa.save()
+                    res.status(200).send({ error: false, conversa: conversa })
+                }
+            })
+            if(conversaExiste == false){
+                var conversa = {
+                    usuarios:[remetente.id,destinatario.id],
+                    mensagens:[{
+                        user:remetente.id,
+                        texto:mensagem
+                    }]                    
+                }
+                const novaConversa = new conversas_bd(conversa)
+                novaConversa.save()
+                res.status(200).send({ error: false, conversa: novaConversa })
+                return
+            }
+        } else {
+            res.status(200).send({ error: true, message: "User não encontrado" })
+        }
+        } catch (error) {
+            res.status(500).send({ error: true, message: "Erro no servidor" });
+        }
+    }
 }
