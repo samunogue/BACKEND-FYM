@@ -153,7 +153,7 @@ class ContratantesController {
               termo:termo,
               dataEvento:dataEvento,
               valor:valor,
-              status:"pendente",
+              status:"PENDENTE",
               codigo: `${Date.now()}${contratante.CPF.slice(0,4)}${musico.CPF.slice(0,4)}`
             }
             contratante.contratos.push(contrato)
@@ -162,7 +162,7 @@ class ContratantesController {
             musico.save()
             res.status(200).send({ error: false, contrato: contrato })
         } else {
-            res.status(404).send({ error: true, message: "Não foi possível gerar o contrato" });
+            res.status(400).send({ error: true, message: "Não foi possível gerar o contrato" });
         }
     } catch (error) {
         res.status(400).send({ error: true, message: "Erro ao editar usuário" });

@@ -133,6 +133,7 @@ export class ContaController {
                 if(conversaExiste == false){
                     var conversa = {
                         usuarios:[remetente.id,destinatario.id],
+                        nomesUsuario: [remetente.nomeCompleto, destinatario.nomeCompleto],
                         mensagens:[]                    
                     }
                     const novaConversa = new conversas_bd(conversa)
@@ -165,6 +166,7 @@ export class ContaController {
             if(conversas == null){
                 var conversa = {
                     usuarios:[remetente.id,destinatario.id],
+                    nomesUsuario: [remetente.nomeCompleto, destinatario.nomeCompleto],
                     mensagens:[{
                         user:remetente.id,
                         texto:mensagem
@@ -191,6 +193,7 @@ export class ContaController {
             if(conversaExiste == false){
                 var conversa = {
                     usuarios:[remetente.id,destinatario.id],
+                    nomesUsuario: [remetente.nomeCompleto, destinatario.nomeCompleto],
                     mensagens:[{
                         user:remetente.id,
                         texto:mensagem
