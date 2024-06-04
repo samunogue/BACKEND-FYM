@@ -38,7 +38,7 @@ class ContratantesController {
       } else {
         user.save((error) => {
           if (error) res.status(500).send({ error: true, message: error.message })
-          res.status(201).send(user)
+          res.status(201).json({error:false, user: user})
         })
       }
     } catch {
